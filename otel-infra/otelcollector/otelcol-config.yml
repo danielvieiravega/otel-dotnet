@@ -1,0 +1,53 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+        cors:
+          allowed_origins:
+            - "http://*"
+            - "https://*"
+
+processors:
+  batch:
+  spanmetrics:
+    metrics_exporter: prometheus
+  attributes:
+   actions:
+      - action: insert
+        key: loki.attribute.labels
+        value: severity, service.name, traceid, exception.message
+  resource:
+    attributes:
+      - action: insert
+        key: loki.resource.labels
+        value: service.name, service.namespace
+
+exporters:
+  otlp/tempo:
+    endpoint: "tempo:4317"
+    tls:
+      insecure: true
+  loki:
+    endpoint: http://loki:3100/loki/api/v1/push
+  prometheus:
+    endpoint: "otelcol:9464"
+    resource_to_telemetry_conversion:
+      enabled: true
+  prometheusremotewrite:
+    endpoint: http://mimir:9009/api/v1/push
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [spanmetrics, batch]
+      exporters: [otlp/tempo]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus, prometheusremotewrite]
+    logs:
+      receivers: [otlp]
+      processors: [attributes, resource]
+      exporters: [loki]

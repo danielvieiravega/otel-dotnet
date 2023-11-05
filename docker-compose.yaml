@@ -1,0 +1,163 @@
+version: '3.9'
+
+services:
+  # **************************
+  # Open Telemetry Components
+  # **************************
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:2.1.0
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./grafana-lgtm/shared/tempo.yaml:/etc/tempo.yaml
+      - ./tempo-data:/tmp/tempo
+    ports:
+      - "14268"  # jaeger ingest
+      - "3200"   # tempo
+      - "4317"  # otlp grpc
+      - "4318"  # otlp http
+      - "9411"   # zipkin
+    networks:
+      - opentelemetry_demo
+
+  mimir:
+    container_name: mimir
+    image: grafana/mimir:latest
+    command: [ "-config.file=/etc/mimir/demo.yaml" ]
+    volumes:
+      - ./grafana-lgtm/shared/mimir-demo.yaml:/etc/mimir/demo.yaml
+    ports:
+      - "9009:9009"
+    networks:
+      - opentelemetry_demo
+
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - opentelemetry_demo
+        
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:9.4.3
+    volumes:
+      - ./grafana-lgtm/shared/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    ports:
+      - "3000:3000"  
+    networks:
+      - opentelemetry_demo
+
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:0.88.0 #0.62.1 
+    container_name: otelcol
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    restart: unless-stopped
+    command: [ "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml" ]
+    volumes:
+      - ./grafana-lgtm/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
+      - ./grafana-lgtm/otelcollector/otelcol-config-extras.yml:/etc/otelcol-config-extras.yml
+    ports:
+      - "4317:4317"          # OTLP over gRPC receiver
+      - "4318:4318"          # OTLP over HTTP receiver
+      - "9464:9464"          # Prometheus exporter
+      - "8888:8888"          # metrics endpoint
+    depends_on:
+      - loki
+      - tempo
+      - mimir
+    networks:
+      - opentelemetry_demo
+
+  # **************************
+  # Examples Apps
+  # **************************
+  webapi:
+    image: danielvieiravega/otel-webapi
+    container_name: webapi
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: TDC
+      OpenTelemetryConfiguration__Endpoint: http://otelcol:4317
+      OpenTelemetryConfiguration__ServiceName: webapi
+      OpenTelemetryConfiguration__Debug: false
+      OpenTelemetryConfiguration__ServiceVersion: 1.1.1
+      OpenTelemetryConfiguration__SampleRate: 1.0
+      Logging__LogLevel__Default: Trace
+      Logging__LogLevel__Microsoft.AspNetCore: Trace
+      MasstransitConfiguration__Producer__ExchangeName: ExchangeExemplo
+      MasstransitConfiguration__Broker__Username: guest
+      MasstransitConfiguration__Broker__Password: guest
+      MasstransitConfiguration__Broker__Host: rabbitmq
+      MasstransitConfiguration__Broker__Port: 5672
+      MasstransitConfiguration__Broker__VirtualHost: /
+      ConnectionStrings__PessoasDb: "Server=sqlserver,1433;Database=PessoasDb;User Id=sa;Password=SqlServer2019!;TrustServerCertificate=true"
+
+    networks:
+      - opentelemetry_demo
+
+  worker:
+    image: danielvieiravega/otel-worker
+    container_name: worker
+    environment:
+      ASPNETCORE_ENVIRONMENT: TDC
+      OpenTelemetryConfiguration__Endpoint: http://otelcol:4317
+      OpenTelemetryConfiguration__ServiceName: worker
+      OpenTelemetryConfiguration__Debug: false
+      OpenTelemetryConfiguration__ServiceVersion: 2.0.0
+      OpenTelemetryConfiguration__SampleRate: 1.0
+      Logging__LogLevel__Default: Trace
+      Logging__LogLevel__Microsoft.AspNetCore: Trace
+      MasstransitConfiguration__Producer__ExchangeName: ExchangeExemplo
+      MasstransitConfiguration__Broker__Username: guest
+      MasstransitConfiguration__Broker__Password: guest
+      MasstransitConfiguration__Broker__Host: rabbitmq
+      MasstransitConfiguration__Broker__Port: 5672
+      MasstransitConfiguration__Broker__VirtualHost: /
+      MasstransitConfiguration__Consumer__QueueName: QueueExemplo
+      MasstransitConfiguration__Consumer__ExchangeName: ExchangeExemplo
+      MasstransitConfiguration__Consumer__ConcurrencyLimit: 1
+      MasstransitConfiguration__Consumer__PrefetchCount: 1
+      ConnectionStrings__PessoasDb: "Server=sqlserver,1433;Database=PessoasDb;User Id=sa;Password=SqlServer2019!;TrustServerCertificate=true"
+    networks:
+      - opentelemetry_demo
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - opentelemetry_demo
+
+  sqlserver:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: "SqlServer2019!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    networks:
+      - opentelemetry_demo
+
+networks:
+  opentelemetry_demo:
+    driver: bridge
