@@ -9,7 +9,7 @@ services:
     image: grafana/tempo:2.1.0
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ./grafana-lgtm/shared/tempo.yaml:/etc/tempo.yaml
+      - ./docker-configuration/grafana-lgtm/tempo.yaml:/etc/tempo.yaml
       - ./tempo-data:/tmp/tempo
     ports:
       - "14268"  # jaeger ingest
@@ -25,7 +25,7 @@ services:
     image: grafana/mimir:latest
     command: [ "-config.file=/etc/mimir/demo.yaml" ]
     volumes:
-      - ./grafana-lgtm/shared/mimir-demo.yaml:/etc/mimir/demo.yaml
+      - ./docker-configuration/grafana-lgtm/mimir-demo.yaml:/etc/mimir/demo.yaml
     ports:
       - "9009:9009"
     networks:
@@ -44,7 +44,7 @@ services:
     container_name: grafana
     image: grafana/grafana:9.4.3
     volumes:
-      - ./grafana-lgtm/shared/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./docker-configuration/grafana-lgtm/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -65,8 +65,8 @@ services:
     restart: unless-stopped
     command: [ "--config=/etc/otelcol-config.yml", "--config=/etc/otelcol-config-extras.yml" ]
     volumes:
-      - ./grafana-lgtm/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
-      - ./grafana-lgtm/otelcollector/otelcol-config-extras.yml:/etc/otelcol-config-extras.yml
+      - ./docker-configuration/otelcollector/otelcol-config.yml:/etc/otelcol-config.yml
+      - ./docker-configuration/otelcollector/otelcol-config-extras.yml:/etc/otelcol-config-extras.yml
     ports:
       - "4317:4317"          # OTLP over gRPC receiver
       - "4318:4318"          # OTLP over HTTP receiver
@@ -104,7 +104,6 @@ services:
       MasstransitConfiguration__Broker__Port: 5672
       MasstransitConfiguration__Broker__VirtualHost: /
       ConnectionStrings__PessoasDb: "Server=sqlserver,1433;Database=PessoasDb;User Id=sa;Password=SqlServer2019!;TrustServerCertificate=true"
-
     networks:
       - opentelemetry_demo
 
