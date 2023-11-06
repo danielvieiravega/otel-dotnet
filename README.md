@@ -9,4 +9,15 @@ Componentes:
 - WebAPI: Uma aplicação do WebAPI;
 - Worker: Um aplicação do tipo Worker.
 
-...
+Para testar buildando as aplicações:
+
+```powershell
+> docker compose up -d --build
+```
+
+Para testar baixando as imagens das aplicações a partir do DockerHub:
+```powershell
+> docker compose up -d
+```
+
+ In progress ...
