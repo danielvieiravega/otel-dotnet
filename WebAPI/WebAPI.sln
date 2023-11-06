@@ -5,8 +5,6 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI.csproj", "{654C6460-1800-44D8-A461-E832B5B82A5D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleOtelLibrary", "..\ExampleOtelLibrary\ExampleOtelLibrary.csproj", "{490AF68E-61D8-4928-AD07-C645D412A17C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{654C6460-1800-44D8-A461-E832B5B82A5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{654C6460-1800-44D8-A461-E832B5B82A5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{654C6460-1800-44D8-A461-E832B5B82A5D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{490AF68E-61D8-4928-AD07-C645D412A17C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{490AF68E-61D8-4928-AD07-C645D412A17C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{490AF68E-61D8-4928-AD07-C645D412A17C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{490AF68E-61D8-4928-AD07-C645D412A17C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

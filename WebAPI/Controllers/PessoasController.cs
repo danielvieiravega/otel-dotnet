@@ -19,11 +19,6 @@ public class PessoasController: ControllerBase
         _context = context;
     }
 
-    /// <summary>
-    /// Endpoint que adiciona uma mensagem em uma fila para ser consumida pelo worker
-    /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
     [HttpPost]
     public IActionResult AddName([FromBody] string name)
     {

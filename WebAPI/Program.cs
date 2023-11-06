@@ -61,6 +61,8 @@ using (var scope = app.Services.CreateScope())
     pessoaContext.Seed();
 }
 
+app.UseMiddleware<OpenTelemetryMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

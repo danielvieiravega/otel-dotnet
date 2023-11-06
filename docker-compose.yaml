@@ -88,6 +88,8 @@ services:
     ports:
       - "8080:80"
     restart: unless-stopped
+    build:
+      context: ./WebAPI
     environment:
       ASPNETCORE_ENVIRONMENT: TDC
       OpenTelemetryConfiguration__Endpoint: http://otelcol:4317
@@ -110,6 +112,8 @@ services:
   worker:
     image: danielvieiravega/otel-worker
     container_name: worker
+    build:
+      context: ./Worker
     environment:
       ASPNETCORE_ENVIRONMENT: TDC
       OpenTelemetryConfiguration__Endpoint: http://otelcol:4317
