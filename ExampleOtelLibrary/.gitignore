@@ -41,7 +41,3 @@ bld/
 msbuild.log
 msbuild.err
 msbuild.wrn
-
-build.ps1
-tempo-data/
-notas.txt

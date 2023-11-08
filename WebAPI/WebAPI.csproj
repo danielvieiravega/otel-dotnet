@@ -24,7 +24,7 @@
 	</ItemGroup>
 
 	<!--<ItemGroup>
-    <ProjectReference Include="..\ExampleOtelLibrary\ExampleOtelLibrary.csproj" />
-  </ItemGroup>-->
+	  <ProjectReference Include="..\ExampleOtelLibrary\ExampleOtelLibrary.csproj" />
+	</ItemGroup>-->
 
 </Project>

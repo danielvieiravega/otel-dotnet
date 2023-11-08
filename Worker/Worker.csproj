@@ -10,11 +10,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ExampleOtelLibrary" Version="0.1.0" />
+		<PackageReference Include="ExampleOtelLibrary" Version="0.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
 		<PackageReference Include="MassTransit.Newtonsoft" Version="8.1.0" />
 		<PackageReference Include="MassTransit.RabbitMQ" Version="8.1.0" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
 	</ItemGroup>
+
+	<!--<ItemGroup>
+	  <ProjectReference Include="..\ExampleOtelLibrary\ExampleOtelLibrary.csproj" />
+	</ItemGroup>-->
+	
 </Project>
