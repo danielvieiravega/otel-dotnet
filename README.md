@@ -20,4 +20,7 @@ Para testar baixando as imagens das aplicações a partir do DockerHub:
 > docker compose up -d
 ```
 
- In progress ...
+A interface do grafana está disponível em `http://localhost:3000/`
+
+
+In progress ...
