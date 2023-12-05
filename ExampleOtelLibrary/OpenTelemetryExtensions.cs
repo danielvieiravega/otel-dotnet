@@ -4,11 +4,10 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using MassTransit.Monitoring;
-using MassTransit.Logging;
 using ExampleOtelLibrary.Processors;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
+using System.Diagnostics.Metrics;
 
 namespace ExampleOtelLibrary;
 
@@ -43,7 +42,7 @@ public static class OpenTelemetryExtensions
                     .AddHttpClientInstrumentation()
                     .AddProcessInstrumentation()
                     .AddRuntimeInstrumentation()
-                    .AddMeter(InstrumentationOptions.MeterName) //MassTransit Observability
+                    .AddMeter("MassTransit")
                     .AddOtlpExporter(otlpOptions =>
                     {
                         otlpOptions.Endpoint = new Uri(settings.Endpoint);
@@ -52,10 +51,15 @@ public static class OpenTelemetryExtensions
                 if (settings.Debug)
                     metricsProviderBuilder.AddConsoleExporter();
 
+                metricsProviderBuilder.AddMeter(settings.MetricsDataset);
                 foreach (var meterName in settings.MeterNames)
                 {
                     metricsProviderBuilder.AddMeter(meterName);
                 }
+
+                // Register the default Meter so it can be injected into other components (eg controllers)
+                if (!string.IsNullOrWhiteSpace(settings.MetricsDataset))
+                    services.AddSingleton(new Meter(settings.MetricsDataset));
             })
             .WithTracing(tracerProviderBuilder =>
             {
@@ -70,7 +74,7 @@ public static class OpenTelemetryExtensions
                     {
                         otlpOptions.Endpoint = new Uri(settings.Endpoint);
                     })
-                    .AddSource(DiagnosticHeaders.DefaultListenerName)
+                    .AddSource("MassTransit")
                     .AddSqlClientInstrumentation(options =>
                     {
                         options.EnableConnectionLevelAttributes = true;
@@ -89,10 +93,7 @@ public static class OpenTelemetryExtensions
 
             });
 
-        //TODO: Ver se precisa mesmo
-        // Register the default Meter so it can be injected into other components (eg controllers)
-        //if (!string.IsNullOrWhiteSpace(settings.MetricsDataset))
-        //    services.AddSingleton(new Meter(settings.MetricsDataset));
+        
 
         services.AddHttpContextAccessor();
 

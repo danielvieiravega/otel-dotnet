@@ -94,11 +94,12 @@ services:
       ASPNETCORE_ENVIRONMENT: TDC
       OpenTelemetryConfiguration__Endpoint: http://otelcol:4317
       OpenTelemetryConfiguration__ServiceName: webapi
-      OpenTelemetryConfiguration__Debug: false
+      OpenTelemetryConfiguration__MeterNames: webapi
+      OpenTelemetryConfiguration__Debug: true
       OpenTelemetryConfiguration__ServiceVersion: 1.1.1
       OpenTelemetryConfiguration__SampleRate: 1.0
-      Logging__LogLevel__Default: Trace
-      Logging__LogLevel__Microsoft.AspNetCore: Trace
+      #Logging__LogLevel__Default: Trace
+      #Logging__LogLevel__Microsoft.AspNetCore: Trace
       MasstransitConfiguration__Producer__ExchangeName: ExchangeExemplo
       MasstransitConfiguration__Broker__Username: guest
       MasstransitConfiguration__Broker__Password: guest
@@ -121,8 +122,8 @@ services:
       OpenTelemetryConfiguration__Debug: false
       OpenTelemetryConfiguration__ServiceVersion: 2.0.0
       OpenTelemetryConfiguration__SampleRate: 1.0
-      Logging__LogLevel__Default: Trace
-      Logging__LogLevel__Microsoft.AspNetCore: Trace
+      #Logging__LogLevel__Default: Trace
+      #Logging__LogLevel__Microsoft.AspNetCore: Trace
       MasstransitConfiguration__Producer__ExchangeName: ExchangeExemplo
       MasstransitConfiguration__Broker__Username: guest
       MasstransitConfiguration__Broker__Password: guest

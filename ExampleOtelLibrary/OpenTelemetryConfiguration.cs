@@ -46,4 +46,8 @@ public class OpenTelemetryConfiguration
     /// <see cref="ServiceName"/> is configured as a meter name by default.
     /// </summary>
     public List<string> MeterNames { get; set; } = new List<string>();
+    /// <summary>
+    /// Dataset to store metrics telemetry data. Defaults to "null".
+    /// </summary>
+    public string? MetricsDataset { get; set; }
 }
